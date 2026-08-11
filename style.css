@@ -12,6 +12,10 @@ body {
 #navbar {
   background: transparent;
   border-bottom: 1px solid transparent;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              background 0.3s ease,
+              box-shadow 0.3s ease,
+              border-color 0.3s ease;
 }
 
 #navbar.scrolled {
@@ -19,6 +23,11 @@ body {
   backdrop-filter: blur(14px);
   border-bottom-color: rgba(255, 255, 255, 0.06);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+}
+
+/* Hide header when scrolling down */
+#navbar.header-hidden {
+  transform: translateY(-100%);
 }
 
 /* Nav links - bigger font + hover background + toggle */
@@ -64,6 +73,87 @@ body {
 
 .btn-chat:active {
   transform: scale(0.96);
+}
+
+/* ===== Hero title word animation ===== */
+.hero-title .word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(28px);
+  margin-right: 0.28em;
+}
+
+.hero-title .word.word-animate {
+  animation: wordIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes wordIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Gradient shimmer on highlighted words */
+.hero-title .highlight {
+  background: linear-gradient(90deg, #22d3ee, #67e8f9, #06b6d4, #22d3ee);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+  to { background-position: 200% center; }
+}
+
+/* ===== Better profile image treatment ===== */
+.profile-frame {
+  position: relative;
+}
+
+.profile-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #06b6d4, #22d3ee, #67e8f9, #0891b2, #06b6d4);
+  animation: spinRing 8s linear infinite;
+  opacity: 0.85;
+}
+
+.profile-ring::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: #0f172a;
+}
+
+@keyframes spinRing {
+  to { transform: rotate(360deg); }
+}
+
+.profile-img-wrap {
+  position: relative;
+  z-index: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid rgba(6, 182, 212, 0.3);
+}
+
+.profile-glow {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.35) 0%, transparent 70%);
+  z-index: 0;
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
 }
 
 /* Buttons */
