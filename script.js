@@ -1,20 +1,43 @@
-// ===== Navbar scroll effect =====
+// ===== Navbar scroll effect + hide on scroll down =====
 const navbar = document.getElementById('navbar');
 const backToTop = document.getElementById('back-to-top');
+let lastScrollY = window.scrollY;
+let ticking = false;
 
-window.addEventListener('scroll', () => {
-  if (window.scrollY > 40) {
+function handleScroll() {
+  const currentY = window.scrollY;
+
+  // Scrolled state (background blur)
+  if (currentY > 40) {
     navbar.classList.add('scrolled');
   } else {
     navbar.classList.remove('scrolled');
   }
 
-  if (window.scrollY > 500) {
+  // Hide on scroll down, show on scroll up
+  if (currentY > lastScrollY && currentY > 120) {
+    navbar.classList.add('header-hidden');
+  } else {
+    navbar.classList.remove('header-hidden');
+  }
+  lastScrollY = currentY;
+
+  // Back to top
+  if (currentY > 500) {
     backToTop.classList.add('visible');
   } else {
     backToTop.classList.remove('visible');
   }
-});
+
+  ticking = false;
+}
+
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    window.requestAnimationFrame(handleScroll);
+    ticking = true;
+  }
+}, { passive: true });
 
 backToTop.addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -67,15 +90,6 @@ function animateCounter(el) {
   const duration = 1800;
   const start = performance.now();
 
-  function update(now) {
-    const progress = Math.min((now - start) / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    const value = Math.floor(eased * target);
-    el.textContent = value.toLocaleString();
-    if (progress < 1) requestAnimationFrame(update);
-    else el.textContent = target.toLocaleString() + (target >= 1000 ? '+' : 'k+'.includes('k') && target < 100 ? '' : '');
-  }
-  // simpler final display
   requestAnimationFrame(function step(now) {
     const progress = Math.min((now - start) / duration, 1);
     const eased = 1 - Math.pow(1 - progress, 3);
@@ -111,9 +125,7 @@ document.querySelectorAll('.faq-question').forEach(btn => {
   btn.addEventListener('click', () => {
     const item = btn.closest('.faq-item');
     const wasOpen = item.classList.contains('open');
-
     document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-
     if (!wasOpen) item.classList.add('open');
   });
 });
@@ -135,7 +147,6 @@ if (form) {
 
     window.location.href = `mailto:ahadalikhan1525@gmail.com?subject=${subject}&body=${body}`;
 
-    // Soft success feedback
     const btn = form.querySelector('button[type="submit"]');
     const original = btn.innerHTML;
     btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Opening email...';
@@ -150,20 +161,12 @@ if (form) {
 // ===== Year in footer =====
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// ===== Smooth active nav (optional polish) =====
-const sections = document.querySelectorAll('section[id]');
-const navLinks = document.querySelectorAll('.nav-link');
-
-window.addEventListener('scroll', () => {
-  let current = '';
-  sections.forEach(section => {
-    const top = section.offsetTop - 120;
-    if (window.scrollY >= top) current = section.getAttribute('id');
+// ===== Hero headline animation (word by word) =====
+const heroTitle = document.querySelector('.hero-title');
+if (heroTitle) {
+  const words = heroTitle.querySelectorAll('.word');
+  words.forEach((word, i) => {
+    word.style.animationDelay = `${0.15 + i * 0.12}s`;
+    word.classList.add('word-animate');
   });
-  navLinks.forEach(link => {
-    link.classList.remove('text-brand-400');
-    if (link.getAttribute('href') === `#${current}`) {
-      link.classList.add('text-brand-400');
-    }
-  });
-});
+}
